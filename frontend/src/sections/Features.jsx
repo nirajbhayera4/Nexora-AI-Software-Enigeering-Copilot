@@ -3,53 +3,53 @@ import {
   SearchCode,
   Network,
   Bug,
-  Code2,
   FileText,
-  Zap,
+  Database,
+  MessageSquareText,
 } from 'lucide-react';
 
 const features = [
   {
     icon: SearchCode,
-    title: 'Repository understanding',
+    title: 'GitHub repository connection',
     description:
-      'Explore source files and ask questions about how your codebase works.',
+      'Connect a public GitHub repository, inspect its details, and index its source code.',
+    status: 'Available',
+  },
+  {
+    icon: Database,
+    title: 'Code indexing and search',
+    description:
+      'Retrieve relevant code from an indexed repository to ground answers in your source.',
+    status: 'Available',
+  },
+  {
+    icon: MessageSquareText,
+    title: 'Repository Q&A',
+    description:
+      'Ask questions in natural language and see answers with the source files and lines used.',
+    status: 'Available',
+  },
+  {
+    icon: Bug,
+    title: 'AI code review',
+    description:
+      'Review prioritized source files for potential bugs, logic issues, and code quality improvements.',
     status: 'Available',
   },
   {
     icon: Network,
     title: 'Architecture analysis',
     description:
-      'Understand modules, components, and relationships across your project.',
-    status: 'In development',
-  },
-  {
-    icon: Bug,
-    title: 'Bug detection',
-    description:
-      'Identify potential bugs and get recommendations to improve code quality.',
-    status: 'In development',
-  },
-  {
-    icon: Code2,
-    title: 'Code review',
-    description:
-      'Explore potential improvements and understand problematic code sections.',
-    status: 'In development',
+      'Explore project structure, modules, dependencies, circular imports, and UML diagrams.',
+    status: 'Available',
   },
   {
     icon: FileText,
     title: 'Code documentation',
     description:
-      'Make complex code easier to understand with clear explanations.',
+      'Generate standalone documentation for repositories and code modules.',
     status: 'Planned',
-  },
-  {
-    icon: Zap,
-    title: 'Developer productivity',
-    description:
-      'Spend less time navigating unfamiliar repositories and more time building.',
-    status: 'Vision',
   },
 ];
 
@@ -60,17 +60,17 @@ function Features() {
 
         <div className="max-w-2xl">
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
-            What Nexora offers
+            Available features
           </span>
 
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-            Everything you need to
-            <span className="text-blue-600"> understand code.</span>
+            Explore, review, and
+            <span className="text-blue-600"> understand your code.</span>
           </h2>
 
           <p className="mt-5 leading-7 text-slate-500">
-            A growing set of AI-powered tools designed to simplify
-            software development and repository exploration.
+            Connect and index a public GitHub repository, ask source-grounded questions,
+            review code, and inspect its architecture.
           </p>
         </div>
 
@@ -92,7 +92,11 @@ function Features() {
                     {feature.title}
                   </h3>
 
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-medium text-slate-500">
+                  <span className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${
+                    feature.status === 'Available'
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'bg-slate-100 text-slate-500'
+                  }`}>
                     {feature.status}
                   </span>
                 </div>
