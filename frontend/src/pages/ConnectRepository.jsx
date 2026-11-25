@@ -5,6 +5,7 @@ import CodeReview from '../components/CodeReview';
 import { Link } from 'react-router-dom';
 import { FaGithub } from 'react-icons/fa';
 import { ArrowLeft, Star, Code2, ExternalLink, Loader2 } from 'lucide-react';
+import ArchitectureAnalysis from '../components/ArchitectureAnalysis';
 
 function ConnectRepository() {
     const [repoUrl, setRepoUrl] = useState('');
@@ -270,12 +271,15 @@ function ConnectRepository() {
 
                 </div>
 
+<<<<<<< HEAD
                 {repository && <CodeReview key={repository.url} repositoryUrl={repository.url} />}
 <<<<<<< Updated upstream
 =======
                 {repository && <ArchitectureAnalysis key={repository.url} repositoryUrl={repository.url} />}
 
 >>>>>>> Stashed changes
+=======
+>>>>>>> 151ee22c566ef21a6ec162766b92d6871366b13f
                 {repository && indexResult && (
                     <div className="mt-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
 
