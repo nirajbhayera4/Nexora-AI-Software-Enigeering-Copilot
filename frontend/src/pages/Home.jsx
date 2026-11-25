@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 
 function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-gradient-to-br from-[#eef9f6] via-[#fbfcf8] to-[#fff8ee]">
+    <main className="min-h-screen overflow-hidden bg-transparent">
       <Navbar />
       <Hero />
       <HowItWorks />

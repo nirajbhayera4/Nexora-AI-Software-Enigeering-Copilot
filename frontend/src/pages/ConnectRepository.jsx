@@ -113,7 +113,7 @@ function ConnectRepository() {
 
 
     return (
-        <main className="min-h-screen bg-[#f5faf8] px-5 py-10">
+        <main className="min-h-screen bg-transparent px-5 py-10">
             <div className="mx-auto max-w-6xl">
 
                 <Link
