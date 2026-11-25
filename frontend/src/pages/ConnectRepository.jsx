@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { FaGithub } from 'react-icons/fa';
 import { ArrowLeft, Star, Code2, ExternalLink, Loader2 } from 'lucide-react';
 import ArchitectureAnalysis from '../components/ArchitectureAnalysis';
+import ScrollReveal from '../components/ScrollReveal';
 
 function ConnectRepository() {
     const [repoUrl, setRepoUrl] = useState('');
@@ -123,6 +124,7 @@ function ConnectRepository() {
                     Back to Home
                 </Link>
 
+                <ScrollReveal delay={60}>
                 <div className="mt-16 text-center">
                     <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-900 text-white">
                         <FaGithub size={32} />
@@ -137,8 +139,10 @@ function ConnectRepository() {
                         GitHub repository URL.
                     </p>
                 </div>
+                </ScrollReveal>
 
-                <div className="mt-10 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                <ScrollReveal className="mt-10">
+                <div className="card-motion rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
 
                     <label className="mb-3 block text-sm font-semibold text-gray-700">
                         GitHub Repository URL
@@ -263,15 +267,21 @@ function ConnectRepository() {
                     )}
 
                 </div>
+                </ScrollReveal>
 
                 {repository && (
                     <div className="mt-8 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2">
-                        <CodeReview key={repository.url} repositoryUrl={repository.url} />
-                        <ArchitectureAnalysis key={repository.url} repositoryUrl={repository.url} />
+                        <ScrollReveal key={`review-${repository.url}`} delay={0} className="h-full">
+                            <CodeReview repositoryUrl={repository.url} />
+                        </ScrollReveal>
+                        <ScrollReveal key={`architecture-${repository.url}`} delay={90} className="h-full">
+                            <ArchitectureAnalysis repositoryUrl={repository.url} />
+                        </ScrollReveal>
                     </div>
                 )}
                 {repository && indexResult && (
-                    <div className="mt-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                    <ScrollReveal className="mt-8">
+                        <div className="card-motion rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
 
                         <h2 className="text-2xl font-bold text-gray-900">
                             Ask Nexora AI
@@ -299,10 +309,12 @@ function ConnectRepository() {
                             </button>
                         </div>
 
-                    </div>
+                        </div>
+                    </ScrollReveal>
                 )}
                 {answer && (
-                    <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/50 p-5">
+                    <ScrollReveal className="mt-6">
+                        <div className="card-motion rounded-2xl border border-blue-100 bg-blue-50/50 p-5">
                         <h3 className="mb-3 text-lg font-semibold text-gray-900">
                             AI Response
                         </h3>
@@ -335,7 +347,8 @@ function ConnectRepository() {
                                 </div>
                             </div>
                         )}
-                    </div>
+                        </div>
+                    </ScrollReveal>
                 )}
 
 

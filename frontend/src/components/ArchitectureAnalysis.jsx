@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
 
 let renderCounter = 0;
 let mermaidPromise = null;
@@ -240,11 +242,97 @@ function DependenciesTab({ data }) {
     );
 }
 
+function DiagramModal({ view, data, onClose }) {
+    const dialogRef = useRef(null);
+    const isDependencies = view === 'dependencies';
+    const title = isDependencies
+        ? 'Dependency diagram'
+        : view === 'class' ? 'UML class diagram' : 'UML sequence diagram';
+
+    useEffect(() => {
+        const previousFocus = document.activeElement;
+        const previousOverflow = document.body.style.overflow;
+        const onKeyDown = event => {
+            if (event.key === 'Escape') onClose();
+        };
+
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', onKeyDown);
+        dialogRef.current?.focus();
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener('keydown', onKeyDown);
+            previousFocus?.focus?.();
+        };
+    }, [onClose]);
+
+    return createPortal(
+        <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/50 p-3 backdrop-blur-sm sm:p-6"
+            onMouseDown={event => {
+                if (event.target === event.currentTarget) onClose();
+            }}
+        >
+            <section
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="architecture-diagram-title"
+                tabIndex={-1}
+                className="flex h-[min(82vh,56rem)] w-full max-w-[min(58rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl outline-none"
+            >
+                <header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-7">
+                    <div>
+                        <h2 id="architecture-diagram-title" className="text-xl font-semibold text-gray-900 sm:text-2xl">
+                            {title}
+                        </h2>
+                        <p className="mt-1 text-sm text-gray-500">
+                            {data.repository.owner}/{data.repository.name} · {data.repository.branch}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Close diagram"
+                        className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
+                    >
+                        <X size={20} />
+                    </button>
+                </header>
+
+                <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-7">
+                    {isDependencies ? (
+                        <DependenciesTab data={data} />
+                    ) : (
+                        <>
+                            {view === 'sequence' && (
+                                <p className="mb-4 text-sm text-gray-600">
+                                    {data.diagrams.sequence_source === 'routes'
+                                        ? 'Built from API routes and the functions they call.'
+                                        : 'No API routes were found, so this shows the import flow.'}
+                                </p>
+                            )}
+                            <MermaidDiagram code={data.diagrams[view]} />
+                        </>
+                    )}
+                </div>
+            </section>
+        </div>,
+        document.body,
+    );
+}
+
 export default function ArchitectureAnalysis({ repositoryUrl }) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [tab, setTab] = useState('summary');
+    const [diagramView, setDiagramView] = useState(null);
+    const closeDiagram = useCallback(() => {
+        setDiagramView(null);
+        setTab('summary');
+    }, []);
 
     async function runAnalysis() {
         setLoading(true);
@@ -266,7 +354,8 @@ export default function ArchitectureAnalysis({ repositoryUrl }) {
     }
 
     return (
-        <section className="min-h-0 min-w-0 w-full rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto lg:overscroll-contain">
+        <>
+        <section className="card-motion h-full min-h-0 min-w-0 w-full rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto lg:overscroll-contain">
             <h2 className="text-2xl font-bold text-gray-900">Repository Architecture Analysis</h2>
             <p className="mt-2 text-sm text-gray-600">
                 Analyse the project structure, modules, dependencies and generate architecture
@@ -291,10 +380,18 @@ export default function ArchitectureAnalysis({ repositoryUrl }) {
                                     key={item.id}
                                     type="button"
                                     role="tab"
-                                    aria-selected={tab === item.id}
-                                    onClick={() => setTab(item.id)}
+                                    aria-selected={tab === item.id || diagramView === item.id}
+                                    onClick={() => {
+                                        if (['dependencies', 'class', 'sequence'].includes(item.id)) {
+                                            setTab(item.id);
+                                            setDiagramView(item.id);
+                                        } else {
+                                            setDiagramView(null);
+                                            setTab(item.id);
+                                        }
+                                    }}
                                     className={`rounded-full px-4 py-2 text-sm font-medium ${
-                                        tab === item.id
+                                        tab === item.id || diagramView === item.id
                                             ? 'bg-blue-600 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
@@ -307,27 +404,13 @@ export default function ArchitectureAnalysis({ repositoryUrl }) {
                         {tab === 'summary' && <SummaryTab data={data} />}
                         {tab === 'structure' && <StructureTab data={data} />}
                         {tab === 'modules' && <ModulesTab data={data} />}
-                        {tab === 'dependencies' && <DependenciesTab data={data} />}
-                        {tab === 'class' && (
-                            <div>
-                                <SectionTitle>UML class diagram</SectionTitle>
-                                <MermaidDiagram code={data.diagrams.class} />
-                            </div>
-                        )}
-                        {tab === 'sequence' && (
-                            <div>
-                                <SectionTitle>UML sequence diagram</SectionTitle>
-                                <p className="mb-3 text-sm text-gray-600">
-                                    {data.diagrams.sequence_source === 'routes'
-                                        ? 'Built from the API routes and the functions they call.'
-                                        : 'No API routes were found, so this shows the import flow from the main entry file.'}
-                                </p>
-                                <MermaidDiagram code={data.diagrams.sequence} />
-                            </div>
-                        )}
                     </div>
                 )}
             </div>
         </section>
+        {data && diagramView && (
+            <DiagramModal view={diagramView} data={data} onClose={closeDiagram} />
+        )}
+        </>
     );
 }
