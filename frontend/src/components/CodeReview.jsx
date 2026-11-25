@@ -33,7 +33,7 @@ export default function CodeReview({ repositoryUrl }) {
     }
 
     return (
-        <section className="h-fit min-w-0 w-full self-start rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="min-h-0 min-w-0 w-full rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6 lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto lg:overscroll-contain">
             <h2 className="text-2xl font-bold text-gray-900">AI Code Review</h2>
             <p className="mt-2 text-sm text-gray-600">
                 Review excerpts from up to five source files on the default branch.
