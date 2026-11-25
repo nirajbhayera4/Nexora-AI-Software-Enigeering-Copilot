@@ -271,6 +271,11 @@ function ConnectRepository() {
                 </div>
 
                 {repository && <CodeReview key={repository.url} repositoryUrl={repository.url} />}
+<<<<<<< Updated upstream
+=======
+                {repository && <ArchitectureAnalysis key={repository.url} repositoryUrl={repository.url} />}
+
+>>>>>>> Stashed changes
                 {repository && indexResult && (
                     <div className="mt-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
 
