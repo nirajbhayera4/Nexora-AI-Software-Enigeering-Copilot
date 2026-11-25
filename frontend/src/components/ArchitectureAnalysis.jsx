@@ -244,34 +244,54 @@ function DependenciesTab({ data }) {
 
 function DiagramModal({ view, data, onClose }) {
     const dialogRef = useRef(null);
+    const closeTimerRef = useRef(null);
+    const isClosingRef = useRef(false);
+    const [entered, setEntered] = useState(false);
+    const [closing, setClosing] = useState(false);
     const isDependencies = view === 'dependencies';
     const title = isDependencies
         ? 'Dependency diagram'
         : view === 'class' ? 'UML class diagram' : 'UML sequence diagram';
 
+    const requestClose = useCallback(() => {
+        if (isClosingRef.current) return;
+        isClosingRef.current = true;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            onClose();
+            return;
+        }
+
+        setClosing(true);
+        closeTimerRef.current = window.setTimeout(onClose, 280);
+    }, [onClose]);
+
     useEffect(() => {
         const previousFocus = document.activeElement;
         const previousOverflow = document.body.style.overflow;
         const onKeyDown = event => {
-            if (event.key === 'Escape') onClose();
+            if (event.key === 'Escape') requestClose();
         };
+        const animationFrame = window.requestAnimationFrame(() => setEntered(true));
 
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', onKeyDown);
         dialogRef.current?.focus();
 
         return () => {
+            window.cancelAnimationFrame(animationFrame);
+            window.clearTimeout(closeTimerRef.current);
             document.body.style.overflow = previousOverflow;
             document.removeEventListener('keydown', onKeyDown);
             previousFocus?.focus?.();
         };
-    }, [onClose]);
+    }, [requestClose]);
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/50 p-3 backdrop-blur-sm sm:p-6"
+            className={`fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/50 p-3 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none sm:p-6 ${entered && !closing ? 'opacity-100' : 'opacity-0'}`}
             onMouseDown={event => {
-                if (event.target === event.currentTarget) onClose();
+                if (event.target === event.currentTarget) requestClose();
             }}
         >
             <section
@@ -280,7 +300,7 @@ function DiagramModal({ view, data, onClose }) {
                 aria-modal="true"
                 aria-labelledby="architecture-diagram-title"
                 tabIndex={-1}
-                className="flex h-[min(82vh,56rem)] w-full max-w-[min(58rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl outline-none"
+                className={`flex h-[min(82vh,56rem)] w-full max-w-[min(58rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl outline-none transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${entered && !closing ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-4 scale-[0.98] opacity-0'}`}
             >
                 <header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 px-5 py-4 sm:px-7">
                     <div>
@@ -293,7 +313,7 @@ function DiagramModal({ view, data, onClose }) {
                     </div>
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={requestClose}
                         aria-label="Close diagram"
                         className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
                     >
