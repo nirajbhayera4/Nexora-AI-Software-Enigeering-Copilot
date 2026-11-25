@@ -113,7 +113,7 @@ function ConnectRepository() {
 
     return (
         <main className="min-h-screen bg-[#f5faf8] px-5 py-10">
-            <div className="mx-auto max-w-3xl">
+            <div className="mx-auto max-w-6xl">
 
                 <Link
                     to="/"
@@ -231,39 +231,32 @@ function ConnectRepository() {
                                 >
                                     {indexing ? 'Indexing Repository...' : 'Index Repository'}
                                 </button>
-                                {indexResult && (
-                                    <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5">
-
-                                        <div className="font-semibold text-green-700">
-                                            {indexResult.message}
-                                        </div>
-
-                                        <p className="mt-2 text-sm text-gray-600">
-                                            Repository: {indexResult.repository || repository.full_name}
-                                        </p>
-
-                                        <div className="mt-4 grid grid-cols-2 gap-4">
-
-                                            <div className="rounded-xl bg-white p-4">
-                                                <p className="text-sm text-gray-500">Files Processed</p>
-                                                <p className="mt-1 text-2xl font-bold text-gray-900">
-                                                    {indexResult.total_files ?? 0}
-                                                </p>
-                                            </div>
-
-                                            <div className="rounded-xl bg-white p-4">
-                                                <p className="text-sm text-gray-500">Code Chunks</p>
-                                                <p className="mt-1 text-2xl font-bold text-gray-900">
-                                                    {indexResult.total_chunks}
-                                                </p>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                )}
-
                             </div>
+
+                            {indexResult && (
+                                <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5">
+                                    <div className="font-semibold text-green-700">
+                                        {indexResult.message}
+                                    </div>
+                                    <p className="mt-2 break-words text-sm text-gray-600">
+                                        Repository: {indexResult.repository || repository.full_name}
+                                    </p>
+                                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div className="rounded-xl bg-white p-4">
+                                            <p className="text-sm text-gray-500">Files Processed</p>
+                                            <p className="mt-1 text-2xl font-bold text-gray-900">
+                                                {indexResult.total_files ?? 0}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-xl bg-white p-4">
+                                            <p className="text-sm text-gray-500">Code Chunks</p>
+                                            <p className="mt-1 text-2xl font-bold text-gray-900">
+                                                {indexResult.total_chunks}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                         </div>
 
@@ -271,8 +264,12 @@ function ConnectRepository() {
 
                 </div>
 
-                {repository && <CodeReview key={repository.url} repositoryUrl={repository.url} />}
-                {repository && <ArchitectureAnalysis key={repository.url} repositoryUrl={repository.url} />}
+                {repository && (
+                    <div className="mt-8 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2">
+                        <CodeReview key={repository.url} repositoryUrl={repository.url} />
+                        <ArchitectureAnalysis key={repository.url} repositoryUrl={repository.url} />
+                    </div>
+                )}
                 {repository && indexResult && (
                     <div className="mt-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
 

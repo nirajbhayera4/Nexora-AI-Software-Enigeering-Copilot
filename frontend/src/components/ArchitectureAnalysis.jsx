@@ -266,7 +266,7 @@ export default function ArchitectureAnalysis({ repositoryUrl }) {
     }
 
     return (
-        <section className="mt-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="h-fit min-w-0 w-full self-start rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
             <h2 className="text-2xl font-bold text-gray-900">Repository Architecture Analysis</h2>
             <p className="mt-2 text-sm text-gray-600">
                 Analyse the project structure, modules, dependencies and generate architecture
